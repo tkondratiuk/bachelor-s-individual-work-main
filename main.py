@@ -1,5 +1,6 @@
 from collections import UserDict
 
+
 class Field:
     def __init__(self, value):
         self.value = value
@@ -7,30 +8,66 @@ class Field:
     def __str__(self):
         return str(self.value)
 
+
 class Name(Field):
     def __init__(self, value):
         super().__init__(value)
 
-class Phone:
+
+class Phone(Field):
     def __init__(self, value):
+        if not value.isdigit() or len(value) != 10:
+            raise ValueError("Phone number must contain only 10 digits only")
         super().__init__(value)
 
+
 class Record:
-    def __init__(self, name):
-        self.name = Name(name)
+    def __init__(self, value):
+        self.name = Name(value)
         self.phones = []
 
-    # реалізація класу
+    def add_phone(self, phone):
+        self.phones.append(Phone(phone))
+
+    def remove_phone(self, phone):
+        for ph in self.phones:
+            if ph.value == phone:
+                self.phones.remove(ph)
+
+    def edit_phone(self, old_phone, new_phone):
+        is_found = False
+        for index, phone in enumerate(self.phones):
+             if phone.value == old_phone:
+                 self.phones[index] = Phone(new_phone)
+                 is_found = True
+        if not is_found:
+            raise ValueError("Phone not found")
+
+    def find_phone(self, phone):
+        for ph in self.phones:
+            if ph.value == phone:
+                return ph
+        return None
 
     def __str__(self):
         return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
 
-class AddressBook:
-    # реалізація класу
-    ...
+
+class AddressBook(UserDict):
+
+    def add_record(self, record):
+        self.data[record.name.value] = record
+
+    def find(self, name):
+        return self.data.get(name)
+
+    def delete(self, name):
+        if name in self.data:
+            del self.data[name]
+
 
 if __name__ == "__main__":
-        # Створення нової адресної книги
+    # Створення нової адресної книги
     book = AddressBook()
 
     # Створення запису для John
